@@ -1,15 +1,22 @@
-import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
+import { serve } from '@hono/node-server'
+const app = new Hono();
 
-const app = new Hono()
+const Reminders: string[] = [];
 
 app.get('/', (c) => {
-  return c.text('Hello H2O!')
+  return c.json({ message: 'Hello world' }, 200)
 })
 
-serve({
-  fetch: app.fetch,
-  port: 3000
-}, (info) => {
-  console.log(`Server is running on http://localhost:${info.port}`)
+app.get('/reminders', (context) => {
+  return context.json({ Reminders }, 200);
 })
+app.post('/AddReminders', async (context) => {
+  const body = await context.req.json();
+
+  Reminders.push(body.reminders);
+  return context.json({ Reminders },201)
+})
+serve(app);
+
+console.log('server is running on http://localhost:3000');
